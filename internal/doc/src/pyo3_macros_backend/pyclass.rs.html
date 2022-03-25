@@ -1,109 +1,107 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pyo3-macros-backend/src/pyclass.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pyclass.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../scrape-examples.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><div class='internal-banner' style='position:fixed; z-index: 99999; color:red;border:3px solid red;margin-left: auto; margin-right: auto; width: 430px;left:0;right: 0;'><div style='display: flex; align-items: center; justify-content: center;'> ⚠️ Internal Docs ⚠️ Not Public API 👉 <a href='https://pyo3.rs/main/doc/pyo3/index.html' style='color:red;text-decoration:underline;'>Official Docs Here</a></div></div>
-
-<nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pyo3_macros_backend/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pyo3_macros_backend/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../../pyo3_macros_backend/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pyo3_macros_backend/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pyo3_macros_backend/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -933,40 +931,23 @@
 <span id="926">926</span>
 <span id="927">927</span>
 <span id="928">928</span>
-<span id="929">929</span>
-<span id="930">930</span>
-<span id="931">931</span>
-<span id="932">932</span>
-<span id="933">933</span>
-<span id="934">934</span>
-<span id="935">935</span>
-<span id="936">936</span>
-<span id="937">937</span>
-<span id="938">938</span>
-<span id="939">939</span>
-<span id="940">940</span>
-<span id="941">941</span>
-<span id="942">942</span>
-<span id="943">943</span>
-<span id="944">944</span>
-<span id="945">945</span>
-<span id="946">946</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::attributes</span>::{
-    <span class="self">self</span>, <span class="ident">take_pyo3_options</span>, <span class="ident">CrateAttribute</span>, <span class="ident">NameAttribute</span>, <span class="ident">TextSignatureAttribute</span>,
+    <span class="self">self</span>, <span class="ident">kw</span>, <span class="ident">take_pyo3_options</span>, <span class="ident">CrateAttribute</span>, <span class="ident">ExtendsAttribute</span>, <span class="ident">FreelistAttribute</span>,
+    <span class="ident">ModuleAttribute</span>, <span class="ident">NameAttribute</span>, <span class="ident">NameLitStr</span>, <span class="ident">TextSignatureAttribute</span>,
 };
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::deprecations::Deprecations</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::deprecations</span>::{<span class="ident">Deprecation</span>, <span class="ident">Deprecations</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::konst</span>::{<span class="ident">ConstAttributes</span>, <span class="ident">ConstSpec</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::pyimpl</span>::{<span class="ident">gen_default_slot_impls</span>, <span class="ident">gen_py_const</span>, <span class="ident">PyClassMethodsType</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::pyimpl</span>::{<span class="ident">gen_default_items</span>, <span class="ident">gen_py_const</span>, <span class="ident">PyClassMethodsType</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::pymethod</span>::{<span class="ident">impl_py_getter_def</span>, <span class="ident">impl_py_setter_def</span>, <span class="ident">PropertyType</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils</span>::{<span class="self">self</span>, <span class="ident">get_pyo3_crate</span>, <span class="ident">unwrap_group</span>, <span class="ident">PythonDoc</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils</span>::{<span class="self">self</span>, <span class="ident">get_pyo3_crate</span>, <span class="ident">PythonDoc</span>};
 <span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Span</span>, <span class="ident">TokenStream</span>};
 <span class="kw">use</span> <span class="ident">quote::quote</span>;
 <span class="kw">use</span> <span class="ident">syn::ext::IdentExt</span>;
 <span class="kw">use</span> <span class="ident">syn::parse</span>::{<span class="ident">Parse</span>, <span class="ident">ParseStream</span>};
 <span class="kw">use</span> <span class="ident">syn::punctuated::Punctuated</span>;
-<span class="kw">use</span> <span class="ident">syn</span>::{<span class="ident">parse_quote</span>, <span class="ident">spanned::Spanned</span>, <span class="ident">Expr</span>, <span class="prelude-ty">Result</span>, <span class="ident">Token</span>}; <span class="comment">//unraw</span>
+<span class="kw">use</span> <span class="ident">syn</span>::{<span class="ident">parse_quote</span>, <span class="ident">spanned::Spanned</span>, <span class="prelude-ty">Result</span>, <span class="ident">Token</span>};
 
 <span class="doccomment">/// If the class is derived from a Rust `struct` or `enum`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
@@ -977,185 +958,85 @@
 
 <span class="doccomment">/// The parsed arguments of the pyclass macro</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PyClassArgs</span> {
-    <span class="kw">pub</span> <span class="ident">freelist</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">syn::Expr</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">syn::Ident</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">base</span>: <span class="ident">syn::TypePath</span>,
-    <span class="kw">pub</span> <span class="ident">has_dict</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">has_weaklist</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">is_gc</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">is_basetype</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">has_extends</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">has_unsendable</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">module</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">syn::LitStr</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">class_kind</span>: <span class="ident">PyClassKind</span>,
+    <span class="kw">pub</span> <span class="ident">options</span>: <span class="ident">PyClassPyO3Options</span>,
+    <span class="kw">pub</span> <span class="ident">deprecations</span>: <span class="ident">Deprecations</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PyClassArgs</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>, <span class="ident">kind</span>: <span class="ident">PyClassKind</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slf</span> <span class="op">=</span> <span class="ident">PyClassArgs::new</span>(<span class="ident">kind</span>);
-        <span class="kw">let</span> <span class="ident">vars</span> <span class="op">=</span> <span class="ident">Punctuated</span>::<span class="op">&lt;</span><span class="ident">Expr</span>, <span class="macro">Token!</span>[,]<span class="op">&gt;</span><span class="ident">::parse_terminated</span>(<span class="ident">input</span>)<span class="question-mark">?</span>;
-        <span class="kw">for</span> <span class="ident">expr</span> <span class="kw">in</span> <span class="ident">vars</span> {
-            <span class="ident">slf</span>.<span class="ident">add_expr</span>(<span class="kw-2">&amp;</span><span class="ident">expr</span>)<span class="question-mark">?</span>;
-        }
-        <span class="prelude-val">Ok</span>(<span class="ident">slf</span>)
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">kind</span>: <span class="ident">PyClassKind</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">PyClassArgs</span> {
+            <span class="ident">class_kind</span>: <span class="ident">kind</span>,
+            <span class="ident">options</span>: <span class="ident">PyClassPyO3Options::parse</span>(<span class="ident">input</span>)<span class="question-mark">?</span>,
+            <span class="ident">deprecations</span>: <span class="ident">Deprecations::new</span>(),
+        })
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_stuct_args</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_stuct_args</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident"><span class="self">Self</span>::parse</span>(<span class="ident">input</span>, <span class="ident">PyClassKind::Struct</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_enum_args</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_enum_args</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="ident"><span class="self">Self</span>::parse</span>(<span class="ident">input</span>, <span class="ident">PyClassKind::Enum</span>)
-    }
-
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">class_kind</span>: <span class="ident">PyClassKind</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">PyClassArgs</span> {
-            <span class="ident">freelist</span>: <span class="prelude-val">None</span>,
-            <span class="ident">name</span>: <span class="prelude-val">None</span>,
-            <span class="ident">module</span>: <span class="prelude-val">None</span>,
-            <span class="ident">base</span>: <span class="macro">parse_quote!</span> { <span class="ident">_pyo3::PyAny</span> },
-            <span class="ident">has_dict</span>: <span class="bool-val">false</span>,
-            <span class="ident">has_weaklist</span>: <span class="bool-val">false</span>,
-            <span class="ident">is_gc</span>: <span class="bool-val">false</span>,
-            <span class="ident">is_basetype</span>: <span class="bool-val">false</span>,
-            <span class="ident">has_extends</span>: <span class="bool-val">false</span>,
-            <span class="ident">has_unsendable</span>: <span class="bool-val">false</span>,
-            <span class="ident">class_kind</span>,
-        }
-    }
-
-    <span class="doccomment">/// Adda single expression from the comma separated list in the attribute, which is</span>
-    <span class="doccomment">/// either a single word or an assignment expression</span>
-    <span class="kw">fn</span> <span class="ident">add_expr</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">Expr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">expr</span> {
-            <span class="ident">syn::Expr::Path</span>(<span class="ident">exp</span>) <span class="kw">if</span> <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> =&gt; <span class="self">self</span>.<span class="ident">add_path</span>(<span class="ident">exp</span>),
-            <span class="ident">syn::Expr::Assign</span>(<span class="ident">assign</span>) =&gt; <span class="self">self</span>.<span class="ident">add_assign</span>(<span class="ident">assign</span>),
-            <span class="kw">_</span> =&gt; <span class="macro">bail_spanned!</span>(<span class="ident">expr</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;failed to parse arguments&quot;</span>),
-        }
-    }
-
-    <span class="doccomment">/// Match a key/value flag</span>
-    <span class="kw">fn</span> <span class="ident">add_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">assign</span>: <span class="kw-2">&amp;</span><span class="ident">syn::ExprAssign</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">syn::ExprAssign</span> { <span class="ident">left</span>, <span class="ident">right</span>, .. } <span class="op">=</span> <span class="ident">assign</span>;
-        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">left</span> {
-            <span class="ident">syn::Expr::Path</span>(<span class="ident">exp</span>) <span class="kw">if</span> <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> =&gt; {
-                <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">first</span>().<span class="ident">unwrap</span>().<span class="ident">ident</span>.<span class="ident">to_string</span>()
-            }
-            <span class="kw">_</span> =&gt; <span class="macro">bail_spanned!</span>(<span class="ident">assign</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;failed to parse arguments&quot;</span>),
-        };
-
-        <span class="macro">macro_rules!</span> <span class="ident">expected</span> {
-            (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>: <span class="ident">literal</span>) =&gt; {
-                <span class="macro">expected!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>, <span class="ident">right</span>.<span class="ident">span</span>())
-            };
-            (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>: <span class="ident">literal</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span>: <span class="ident">expr</span>) =&gt; {
-                <span class="macro">bail_spanned!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">span</span> =&gt; <span class="macro">concat!</span>(<span class="string">&quot;expected &quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">expected</span>))
-            };
-        }
-
-        <span class="kw">match</span> <span class="ident">key</span>.<span class="ident">as_str</span>() {
-            <span class="string">&quot;freelist&quot;</span> =&gt; {
-                <span class="comment">// We allow arbitrary expressions here so you can e.g. use `8*64`</span>
-                <span class="self">self</span>.<span class="ident">freelist</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">syn::Expr::clone</span>(<span class="ident">right</span>));
-            }
-            <span class="string">&quot;name&quot;</span> =&gt; <span class="kw">match</span> <span class="ident">unwrap_group</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">right</span>) {
-                <span class="ident">syn::Expr::Lit</span>(<span class="ident">syn::ExprLit</span> {
-                    <span class="ident">lit</span>: <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>),
-                    ..
-                }) =&gt; {
-                    <span class="self">self</span>.<span class="ident">name</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">parse</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
-                        <span class="macro">err_spanned!</span>(
-                                <span class="ident">lit</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;expected a single identifier in double-quotes&quot;</span>)
-                    })<span class="question-mark">?</span>);
-                }
-                <span class="ident">syn::Expr::Path</span>(<span class="ident">exp</span>) <span class="kw">if</span> <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> =&gt; {
-                    <span class="macro">bail_spanned!</span>(
-                        <span class="ident">exp</span>.<span class="ident">span</span>() =&gt; <span class="macro">format!</span>(
-                            <span class="string">&quot;since PyO3 0.13 a pyclass name should be in double-quotes, \
-                            e.g. \&quot;{}\&quot;&quot;</span>,
-                            <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">get_ident</span>().<span class="ident">expect</span>(<span class="string">&quot;path has 1 segment&quot;</span>)
-                        )
-                    );
-                }
-                <span class="kw">_</span> =&gt; <span class="macro">expected!</span>(<span class="string">&quot;type name (e.g. \&quot;Name\&quot;)&quot;</span>),
-            },
-            <span class="string">&quot;extends&quot;</span> =&gt; <span class="kw">match</span> <span class="ident">unwrap_group</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">right</span>) {
-                <span class="ident">syn::Expr::Path</span>(<span class="ident">exp</span>) =&gt; {
-                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">class_kind</span> <span class="op">==</span> <span class="ident">PyClassKind::Enum</span> {
-                        <span class="macro">bail_spanned!</span>( <span class="ident">assign</span>.<span class="ident">span</span>() =&gt;  <span class="string">&quot;enums cannot extend from other classes&quot;</span> );
-                    }
-                    <span class="self">self</span>.<span class="ident">base</span> <span class="op">=</span> <span class="ident">syn::TypePath</span> {
-                        <span class="ident">path</span>: <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">clone</span>(),
-                        <span class="ident">qself</span>: <span class="prelude-val">None</span>,
-                    };
-                    <span class="self">self</span>.<span class="ident">has_extends</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                }
-                <span class="kw">_</span> =&gt; <span class="macro">expected!</span>(<span class="string">&quot;type path (e.g., my_mod::BaseClass)&quot;</span>),
-            },
-            <span class="string">&quot;module&quot;</span> =&gt; <span class="kw">match</span> <span class="ident">unwrap_group</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">right</span>) {
-                <span class="ident">syn::Expr::Lit</span>(<span class="ident">syn::ExprLit</span> {
-                    <span class="ident">lit</span>: <span class="ident">syn::Lit::Str</span>(<span class="ident">lit</span>),
-                    ..
-                }) =&gt; {
-                    <span class="self">self</span>.<span class="ident">module</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lit</span>.<span class="ident">clone</span>());
-                }
-                <span class="kw">_</span> =&gt; <span class="macro">expected!</span>(<span class="string">r#&quot;string literal (e.g., &quot;my_mod&quot;)&quot;#</span>),
-            },
-            <span class="kw">_</span> =&gt; <span class="macro">expected!</span>(<span class="string">&quot;one of freelist/name/extends/module&quot;</span>, <span class="ident">left</span>.<span class="ident">span</span>()),
-        };
-
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="doccomment">/// Match a single flag</span>
-    <span class="kw">fn</span> <span class="ident">add_path</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">exp</span>: <span class="kw-2">&amp;</span><span class="ident">syn::ExprPath</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">flag</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">first</span>().<span class="ident">unwrap</span>().<span class="ident">ident</span>.<span class="ident">to_string</span>();
-        <span class="kw">match</span> <span class="ident">flag</span>.<span class="ident">as_str</span>() {
-            <span class="string">&quot;gc&quot;</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">is_gc</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
-            <span class="string">&quot;weakref&quot;</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">has_weaklist</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
-            <span class="string">&quot;subclass&quot;</span> =&gt; {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">class_kind</span> <span class="op">==</span> <span class="ident">PyClassKind::Enum</span> {
-                    <span class="macro">bail_spanned!</span>(<span class="ident">exp</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;enums can&#39;t be inherited by other classes&quot;</span>);
-                }
-                <span class="self">self</span>.<span class="ident">is_basetype</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
-            <span class="string">&quot;dict&quot;</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">has_dict</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
-            <span class="string">&quot;unsendable&quot;</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">has_unsendable</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
-            <span class="kw">_</span> =&gt; <span class="macro">bail_spanned!</span>(
-                <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;expected one of gc/weakref/subclass/dict/unsendable&quot;</span>
-            ),
-        };
-        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PyClassPyO3Options</span> {
-    <span class="kw">pub</span> <span class="ident">text_signature</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextSignatureAttribute</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">deprecations</span>: <span class="ident">Deprecations</span>,
     <span class="kw">pub</span> <span class="ident">krate</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CrateAttribute</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">dict</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::dict</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">extends</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ExtendsAttribute</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">freelist</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FreelistAttribute</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">module</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ModuleAttribute</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NameAttribute</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">subclass</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::subclass</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">text_signature</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextSignatureAttribute</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">unsendable</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::unsendable</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">weakref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">kw::weakref</span><span class="op">&gt;</span>,
+
+    <span class="kw">pub</span> <span class="ident">deprecations</span>: <span class="ident">Deprecations</span>,
 }
 
 <span class="kw">enum</span> <span class="ident">PyClassPyO3Option</span> {
-    <span class="ident">TextSignature</span>(<span class="ident">TextSignatureAttribute</span>),
     <span class="ident">Crate</span>(<span class="ident">CrateAttribute</span>),
+    <span class="ident">Dict</span>(<span class="ident">kw::dict</span>),
+    <span class="ident">Extends</span>(<span class="ident">ExtendsAttribute</span>),
+    <span class="ident">Freelist</span>(<span class="ident">FreelistAttribute</span>),
+    <span class="ident">Module</span>(<span class="ident">ModuleAttribute</span>),
+    <span class="ident">Name</span>(<span class="ident">NameAttribute</span>),
+    <span class="ident">Subclass</span>(<span class="ident">kw::subclass</span>),
+    <span class="ident">TextSignature</span>(<span class="ident">TextSignatureAttribute</span>),
+    <span class="ident">Unsendable</span>(<span class="ident">kw::unsendable</span>),
+    <span class="ident">Weakref</span>(<span class="ident">kw::weakref</span>),
+
+    <span class="ident">DeprecatedGC</span>(<span class="ident">kw::gc</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">PyClassPyO3Option</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">lookahead</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">lookahead1</span>();
-        <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::text_signature</span>) {
-            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::TextSignature</span>)
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="macro">Token!</span>[<span class="kw">crate</span>]) {
+        <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="macro">Token!</span>[<span class="kw">crate</span>]) {
             <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Crate</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">kw::dict</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Dict</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">kw::extends</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Extends</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::freelist</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Freelist</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::module</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Module</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">kw::name</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Name</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::subclass</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Subclass</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::text_signature</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::TextSignature</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::unsendable</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Unsendable</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::weakref</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::Weakref</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::gc</span>) {
+            <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">PyClassPyO3Option::DeprecatedGC</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">lookahead</span>.<span class="ident">error</span>())
         }
@@ -1163,57 +1044,69 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PyClassPyO3Options</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_pyo3_options</span>(<span class="ident">attrs</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">syn::Attribute</span><span class="op">&gt;</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">options</span>: <span class="ident">PyClassPyO3Options</span> <span class="op">=</span> <span class="ident">Default::default</span>();
-        <span class="kw">for</span> <span class="ident">option</span> <span class="kw">in</span> <span class="ident">take_pyo3_options</span>(<span class="ident">attrs</span>)<span class="question-mark">?</span> {
-            <span class="kw">match</span> <span class="ident">option</span> {
-                <span class="ident">PyClassPyO3Option::TextSignature</span>(<span class="ident">text_signature</span>) =&gt; {
-                    <span class="ident">options</span>.<span class="ident">set_text_signature</span>(<span class="ident">text_signature</span>)<span class="question-mark">?</span>;
-                }
-                <span class="ident">PyClassPyO3Option::Crate</span>(<span class="ident">path</span>) =&gt; {
-                    <span class="ident">options</span>.<span class="ident">set_crate</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
-                }
-            }
+
+        <span class="kw">for</span> <span class="ident">option</span> <span class="kw">in</span> <span class="ident">Punctuated</span>::<span class="op">&lt;</span><span class="ident">PyClassPyO3Option</span>, <span class="macro">syn::Token!</span>[,]<span class="op">&gt;</span><span class="ident">::parse_terminated</span>(<span class="ident">input</span>)<span class="question-mark">?</span> {
+            <span class="ident">options</span>.<span class="ident">set_option</span>(<span class="ident">option</span>)<span class="question-mark">?</span>;
         }
+
         <span class="prelude-val">Ok</span>(<span class="ident">options</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text_signature</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">text_signature</span>: <span class="ident">TextSignatureAttribute</span>,
-    ) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="macro">ensure_spanned!</span>(
-            <span class="self">self</span>.<span class="ident">text_signature</span>.<span class="ident">is_none</span>(),
-            <span class="ident">text_signature</span>.<span class="ident">kw</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;`text_signature` may only be specified once&quot;</span>
-        );
-        <span class="self">self</span>.<span class="ident">text_signature</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">text_signature</span>);
-        <span class="prelude-val">Ok</span>(())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_pyo3_options</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">attrs</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">syn::Attribute</span><span class="op">&gt;</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="ident">take_pyo3_options</span>(<span class="ident">attrs</span>)<span class="question-mark">?</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">try_for_each</span>(<span class="op">|</span><span class="ident">option</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">set_option</span>(<span class="ident">option</span>))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_crate</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">CrateAttribute</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="macro">ensure_spanned!</span>(
-            <span class="self">self</span>.<span class="ident">krate</span>.<span class="ident">is_none</span>(),
-            <span class="ident">path</span>.<span class="number">0</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;`text_signature` may only be specified once&quot;</span>
-        );
-        <span class="self">self</span>.<span class="ident">krate</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>);
+    <span class="kw">fn</span> <span class="ident">set_option</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">option</span>: <span class="ident">PyClassPyO3Option</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="macro">macro_rules!</span> <span class="ident">set_option</span> {
+            (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ident</span>) =&gt; {
+                {
+                    <span class="macro">ensure_spanned!</span>(
+                        <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>.<span class="ident">is_none</span>(),
+                        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>.<span class="ident">span</span>() =&gt; <span class="macro">concat!</span>(<span class="string">&quot;`&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>), <span class="string">&quot;` may only be specified once&quot;</span>)
+                    );
+                    <span class="self">self</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>);
+                }
+            };
+        }
+
+        <span class="kw">match</span> <span class="ident">option</span> {
+            <span class="ident">PyClassPyO3Option::Crate</span>(<span class="ident">krate</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">krate</span>),
+            <span class="ident">PyClassPyO3Option::Dict</span>(<span class="ident">dict</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">dict</span>),
+            <span class="ident">PyClassPyO3Option::Extends</span>(<span class="ident">extends</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">extends</span>),
+            <span class="ident">PyClassPyO3Option::Freelist</span>(<span class="ident">freelist</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">freelist</span>),
+            <span class="ident">PyClassPyO3Option::Module</span>(<span class="ident">module</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">module</span>),
+            <span class="ident">PyClassPyO3Option::Name</span>(<span class="ident">name</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">name</span>),
+            <span class="ident">PyClassPyO3Option::Subclass</span>(<span class="ident">subclass</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">subclass</span>),
+            <span class="ident">PyClassPyO3Option::TextSignature</span>(<span class="ident">text_signature</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">text_signature</span>),
+            <span class="ident">PyClassPyO3Option::Unsendable</span>(<span class="ident">unsendable</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">unsendable</span>),
+            <span class="ident">PyClassPyO3Option::Weakref</span>(<span class="ident">weakref</span>) =&gt; <span class="macro">set_option!</span>(<span class="ident">weakref</span>),
+
+            <span class="ident">PyClassPyO3Option::DeprecatedGC</span>(<span class="ident">gc</span>) =&gt; <span class="self">self</span>
+                .<span class="ident">deprecations</span>
+                .<span class="ident">push</span>(<span class="ident">Deprecation::PyClassGcOption</span>, <span class="ident">gc</span>.<span class="ident">span</span>()),
+        }
         <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_py_class</span>(
     <span class="ident">class</span>: <span class="kw-2">&amp;mut</span> <span class="ident">syn::ItemStruct</span>,
-    <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassArgs</span>,
+    <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">PyClassArgs</span>,
     <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>,
 ) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">PyClassPyO3Options::take_pyo3_options</span>(<span class="kw-2">&amp;mut</span> <span class="ident">class</span>.<span class="ident">attrs</span>)<span class="question-mark">?</span>;
+    <span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">take_pyo3_options</span>(<span class="kw-2">&amp;mut</span> <span class="ident">class</span>.<span class="ident">attrs</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="ident">utils::get_doc</span>(
         <span class="kw-2">&amp;</span><span class="ident">class</span>.<span class="ident">attrs</span>,
-        <span class="ident">options</span>
+        <span class="ident">args</span>.<span class="ident">options</span>
             .<span class="ident">text_signature</span>
             .<span class="ident">as_ref</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> (<span class="ident">get_class_python_name</span>(<span class="kw-2">&amp;</span><span class="ident">class</span>.<span class="ident">ident</span>, <span class="ident">args</span>), <span class="ident">attr</span>)),
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> (<span class="ident">get_class_python_name</span>(<span class="kw-2">&amp;</span><span class="ident">class</span>.<span class="ident">ident</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>), <span class="ident">attr</span>)),
     );
-    <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">get_pyo3_crate</span>(<span class="kw-2">&amp;</span><span class="ident">options</span>.<span class="ident">krate</span>);
+    <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">get_pyo3_crate</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">krate</span>);
 
     <span class="macro">ensure_spanned!</span>(
         <span class="ident">class</span>.<span class="ident">generics</span>.<span class="ident">params</span>.<span class="ident">is_empty</span>(),
@@ -1243,15 +1136,7 @@
         }
     };
 
-    <span class="ident">impl_class</span>(
-        <span class="kw-2">&amp;</span><span class="ident">class</span>.<span class="ident">ident</span>,
-        <span class="ident">args</span>,
-        <span class="ident">doc</span>,
-        <span class="ident">field_options</span>,
-        <span class="ident">methods_type</span>,
-        <span class="ident">options</span>.<span class="ident">deprecations</span>,
-        <span class="ident">krate</span>,
-    )
+    <span class="ident">impl_class</span>(<span class="kw-2">&amp;</span><span class="ident">class</span>.<span class="ident">ident</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>, <span class="ident">doc</span>, <span class="ident">field_options</span>, <span class="ident">methods_type</span>, <span class="ident">krate</span>)
 }
 
 <span class="doccomment">/// `#[pyo3()]` options for pyclass fields</span>
@@ -1268,7 +1153,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">FieldPyO3Option</span> {
-    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">lookahead</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">lookahead1</span>();
         <span class="kw">if</span> <span class="ident">lookahead</span>.<span class="ident">peek</span>(<span class="ident">attributes::kw::get</span>) {
             <span class="ident">input</span>.<span class="ident">parse</span>().<span class="ident">map</span>(<span class="ident">FieldPyO3Option::Get</span>)
@@ -1309,7 +1194,7 @@
                 <span class="ident">FieldPyO3Option::Name</span>(<span class="ident">name</span>) =&gt; {
                     <span class="macro">ensure_spanned!</span>(
                         <span class="ident">options</span>.<span class="ident">name</span>.<span class="ident">is_none</span>(),
-                        <span class="ident">name</span>.<span class="number">0</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;`name` may only be specified once&quot;</span>
+                        <span class="ident">name</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;`name` may only be specified once&quot;</span>
                     );
                     <span class="ident">options</span>.<span class="ident">name</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>);
                 }
@@ -1320,26 +1205,33 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">get_class_python_name</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>, <span class="ident">attr</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyClassArgs</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span> {
-    <span class="ident">attr</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap_or</span>(<span class="ident">cls</span>)
+<span class="kw">fn</span> <span class="ident">get_class_python_name</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>, <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyClassArgs</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span> {
+    <span class="ident">args</span>.<span class="ident">options</span>
+        .<span class="ident">name</span>
+        .<span class="ident">as_ref</span>()
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name_attr</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">name_attr</span>.<span class="ident">value</span>.<span class="number">0</span>)
+        .<span class="ident">unwrap_or</span>(<span class="ident">cls</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">impl_class</span>(
     <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>,
-    <span class="ident">attr</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassArgs</span>,
+    <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassArgs</span>,
     <span class="ident">doc</span>: <span class="ident">PythonDoc</span>,
     <span class="ident">field_options</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">syn::Field</span>, <span class="ident">FieldPyO3Options</span>)<span class="op">&gt;</span>,
     <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>,
-    <span class="ident">deprecations</span>: <span class="ident">Deprecations</span>,
     <span class="ident">krate</span>: <span class="ident">syn::Path</span>,
 ) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">pytypeinfo_impl</span> <span class="op">=</span> <span class="ident">impl_pytypeinfo</span>(<span class="ident">cls</span>, <span class="ident">attr</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">deprecations</span>));
+    <span class="kw">let</span> <span class="ident">pytypeinfo_impl</span> <span class="op">=</span> <span class="ident">impl_pytypeinfo</span>(<span class="ident">cls</span>, <span class="ident">args</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">deprecations</span>));
 
-    <span class="kw">let</span> <span class="ident">py_class_impl</span> <span class="op">=</span> <span class="ident">PyClassImplsBuilder::new</span>(<span class="ident">cls</span>, <span class="ident">attr</span>, <span class="ident">methods_type</span>)
-        .<span class="ident">doc</span>(<span class="ident">doc</span>)
-        .<span class="ident">impl_all</span>();
-
-    <span class="kw">let</span> <span class="ident">descriptors</span> <span class="op">=</span> <span class="ident">impl_descriptors</span>(<span class="ident">cls</span>, <span class="ident">field_options</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">py_class_impl</span> <span class="op">=</span> <span class="ident">PyClassImplsBuilder::new</span>(
+        <span class="ident">cls</span>,
+        <span class="ident">args</span>,
+        <span class="ident">methods_type</span>,
+        <span class="ident">descriptors_to_items</span>(<span class="ident">cls</span>, <span class="ident">field_options</span>)<span class="question-mark">?</span>,
+        <span class="macro">vec!</span>[],
+    )
+    .<span class="ident">doc</span>(<span class="ident">doc</span>)
+    .<span class="ident">impl_all</span>();
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> {
         <span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
@@ -1348,8 +1240,6 @@
             #<span class="ident">pytypeinfo_impl</span>
 
             #<span class="ident">py_class_impl</span>
-
-            #<span class="ident">descriptors</span>
         };
     })
 }
@@ -1359,79 +1249,192 @@
     <span class="comment">/* currently have no more options */</span>
 }
 
+<span class="kw">struct</span> <span class="ident">PyClassEnum</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">ident</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>,
+    <span class="comment">// The underlying #[repr] of the enum, used to implement __int__ and __richcmp__.</span>
+    <span class="comment">// This matters when the underlying representation may not fit in `isize`.</span>
+    <span class="ident">repr_type</span>: <span class="ident">syn::Ident</span>,
+    <span class="ident">variants</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyClassEnumVariant</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PyClassEnum</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">enum_</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::ItemEnum</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">is_numeric_type</span>(<span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>) -&gt; <span class="ident">bool</span> {
+            [
+                <span class="string">&quot;u8&quot;</span>, <span class="string">&quot;i8&quot;</span>, <span class="string">&quot;u16&quot;</span>, <span class="string">&quot;i16&quot;</span>, <span class="string">&quot;u32&quot;</span>, <span class="string">&quot;i32&quot;</span>, <span class="string">&quot;u64&quot;</span>, <span class="string">&quot;i64&quot;</span>, <span class="string">&quot;u128&quot;</span>, <span class="string">&quot;i128&quot;</span>, <span class="string">&quot;usize&quot;</span>,
+                <span class="string">&quot;isize&quot;</span>,
+            ]
+            .<span class="ident">iter</span>()
+            .<span class="ident">any</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">s</span><span class="op">|</span> <span class="ident">t</span> <span class="op">==</span> <span class="ident">s</span>)
+        }
+        <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">ident</span>;
+        <span class="comment">// According to the [reference](https://doc.rust-lang.org/reference/items/enumerations.html),</span>
+        <span class="comment">// &quot;Under the default representation, the specified discriminant is interpreted as an isize</span>
+        <span class="comment">// value&quot;, so `isize` should be enough by default.</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">repr_type</span> <span class="op">=</span> <span class="ident">syn::Ident::new</span>(<span class="string">&quot;isize&quot;</span>, <span class="ident">proc_macro2::Span::call_site</span>());
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">attr</span>) <span class="op">=</span> <span class="ident">enum_</span>.<span class="ident">attrs</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> <span class="ident">attr</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;repr&quot;</span>)) {
+            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span>
+                <span class="ident">attr</span>.<span class="ident">parse_args_with</span>(<span class="ident">Punctuated</span>::<span class="op">&lt;</span><span class="ident">TokenStream</span>, <span class="macro">Token!</span>[<span class="op">!</span>]<span class="op">&gt;</span><span class="ident">::parse_terminated</span>)<span class="question-mark">?</span>;
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ident</span>) <span class="op">=</span> <span class="ident">args</span>
+                .<span class="ident">into_iter</span>()
+                .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">ts</span><span class="op">|</span> <span class="ident">syn::parse2</span>::<span class="op">&lt;</span><span class="ident">syn::Ident</span><span class="op">&gt;</span>(<span class="ident">ts</span>).<span class="ident">ok</span>())
+                .<span class="ident">find</span>(<span class="ident">is_numeric_type</span>)
+            {
+                <span class="ident">repr_type</span> <span class="op">=</span> <span class="ident">ident</span>;
+            }
+        }
+
+        <span class="kw">let</span> <span class="ident">variants</span> <span class="op">=</span> <span class="ident">enum_</span>
+            .<span class="ident">variants</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">map</span>(<span class="ident">extract_variant_data</span>)
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">syn::Result</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
+            <span class="ident">ident</span>,
+            <span class="ident">repr_type</span>,
+            <span class="ident">variants</span>,
+        })
+    }
+}
+
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_py_enum</span>(
     <span class="ident">enum_</span>: <span class="kw-2">&amp;mut</span> <span class="ident">syn::ItemEnum</span>,
-    <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassArgs</span>,
+    <span class="kw-2">mut</span> <span class="ident">args</span>: <span class="ident">PyClassArgs</span>,
     <span class="ident">method_type</span>: <span class="ident">PyClassMethodsType</span>,
 ) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">PyClassPyO3Options::take_pyo3_options</span>(<span class="kw-2">&amp;mut</span> <span class="ident">enum_</span>.<span class="ident">attrs</span>)<span class="question-mark">?</span>;
+    <span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">take_pyo3_options</span>(<span class="kw-2">&amp;mut</span> <span class="ident">enum_</span>.<span class="ident">attrs</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">if</span> <span class="ident">enum_</span>.<span class="ident">variants</span>.<span class="ident">is_empty</span>() {
-        <span class="macro">bail_spanned!</span>(<span class="ident">enum_</span>.<span class="ident">brace_token</span>.<span class="ident">span</span> =&gt; <span class="string">&quot;Empty enums can&#39;t be #[pyclass].&quot;</span>);
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">extends</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">extends</span> {
+        <span class="macro">bail_spanned!</span>(<span class="ident">extends</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;enums can&#39;t extend from other classes&quot;</span>);
+    } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">subclass</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">subclass</span> {
+        <span class="macro">bail_spanned!</span>(<span class="ident">subclass</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;enums can&#39;t be inherited by other classes&quot;</span>);
+    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">enum_</span>.<span class="ident">variants</span>.<span class="ident">is_empty</span>() {
+        <span class="macro">bail_spanned!</span>(<span class="ident">enum_</span>.<span class="ident">brace_token</span>.<span class="ident">span</span> =&gt; <span class="string">&quot;#[pyclass] can&#39;t be used on enums without any variants&quot;</span>);
     }
-    <span class="kw">let</span> <span class="ident">variants</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyClassEnumVariant</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">enum_</span>
-        .<span class="ident">variants</span>
-        .<span class="ident">iter</span>()
-        .<span class="ident">map</span>(<span class="ident">extract_variant_data</span>)
-        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">syn::Result</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-    <span class="ident">impl_enum</span>(<span class="ident">enum_</span>, <span class="ident">args</span>, <span class="ident">variants</span>, <span class="ident">method_type</span>, <span class="ident">options</span>)
+
+    <span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="ident">utils::get_doc</span>(
+        <span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">attrs</span>,
+        <span class="ident">args</span>.<span class="ident">options</span>
+            .<span class="ident">text_signature</span>
+            .<span class="ident">as_ref</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> (<span class="ident">get_class_python_name</span>(<span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">ident</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>), <span class="ident">attr</span>)),
+    );
+    <span class="kw">let</span> <span class="ident">enum_</span> <span class="op">=</span> <span class="ident">PyClassEnum::new</span>(<span class="ident">enum_</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(<span class="ident">impl_enum</span>(<span class="ident">enum_</span>, <span class="kw-2">&amp;</span><span class="ident">args</span>, <span class="ident">doc</span>, <span class="ident">method_type</span>))
 }
 
 <span class="kw">fn</span> <span class="ident">impl_enum</span>(
-    <span class="ident">enum_</span>: <span class="kw-2">&amp;</span><span class="ident">syn::ItemEnum</span>,
+    <span class="ident">enum_</span>: <span class="ident">PyClassEnum</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
     <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassArgs</span>,
-    <span class="ident">variants</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyClassEnumVariant</span><span class="op">&gt;</span>,
+    <span class="ident">doc</span>: <span class="ident">PythonDoc</span>,
     <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>,
-    <span class="ident">options</span>: <span class="ident">PyClassPyO3Options</span>,
-) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">enum_name</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">ident</span>;
-    <span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="ident">utils::get_doc</span>(
-        <span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">attrs</span>,
-        <span class="ident">options</span>
-            .<span class="ident">text_signature</span>
-            .<span class="ident">as_ref</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> (<span class="ident">get_class_python_name</span>(<span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">ident</span>, <span class="ident">args</span>), <span class="ident">attr</span>)),
-    );
-    <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">get_pyo3_crate</span>(<span class="kw-2">&amp;</span><span class="ident">options</span>.<span class="ident">krate</span>);
-    <span class="ident">impl_enum_class</span>(<span class="ident">enum_name</span>, <span class="ident">args</span>, <span class="ident">variants</span>, <span class="ident">doc</span>, <span class="ident">methods_type</span>, <span class="ident">krate</span>)
+) -&gt; <span class="ident">TokenStream</span> {
+    <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">get_pyo3_crate</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">options</span>.<span class="ident">krate</span>);
+    <span class="ident">impl_enum_class</span>(<span class="ident">enum_</span>, <span class="ident">args</span>, <span class="ident">doc</span>, <span class="ident">methods_type</span>, <span class="ident">krate</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">impl_enum_class</span>(
-    <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>,
+    <span class="ident">enum_</span>: <span class="ident">PyClassEnum</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
     <span class="ident">args</span>: <span class="kw-2">&amp;</span><span class="ident">PyClassArgs</span>,
-    <span class="ident">variants</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PyClassEnumVariant</span><span class="op">&gt;</span>,
     <span class="ident">doc</span>: <span class="ident">PythonDoc</span>,
     <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>,
     <span class="ident">krate</span>: <span class="ident">syn::Path</span>,
-) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
+) -&gt; <span class="ident">TokenStream</span> {
+    <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="ident">enum_</span>.<span class="ident">ident</span>;
+    <span class="kw">let</span> <span class="ident">variants</span> <span class="op">=</span> <span class="ident">enum_</span>.<span class="ident">variants</span>;
     <span class="kw">let</span> <span class="ident">pytypeinfo</span> <span class="op">=</span> <span class="ident">impl_pytypeinfo</span>(<span class="ident">cls</span>, <span class="ident">args</span>, <span class="prelude-val">None</span>);
-    <span class="kw">let</span> <span class="ident">pyclass_impls</span> <span class="op">=</span> <span class="ident">PyClassImplsBuilder::new</span>(<span class="ident">cls</span>, <span class="ident">args</span>, <span class="ident">methods_type</span>)
-        .<span class="ident">doc</span>(<span class="ident">doc</span>)
-        .<span class="ident">impl_all</span>();
-    <span class="kw">let</span> <span class="ident">descriptors</span> <span class="op">=</span> <span class="ident">unit_variants_as_descriptors</span>(<span class="ident">cls</span>, <span class="ident">variants</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">ident</span>));
 
-    <span class="kw">let</span> <span class="ident">default_repr_impl</span> <span class="op">=</span> {
+    <span class="kw">let</span> <span class="ident">default_repr_impl</span>: <span class="ident">syn::ImplItemMethod</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="ident">variants_repr</span> <span class="op">=</span> <span class="ident">variants</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">variant</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">variant_name</span> <span class="op">=</span> <span class="ident">variant</span>.<span class="ident">ident</span>;
             <span class="comment">// Assuming all variants are unit variants because they are the only type we support.</span>
             <span class="kw">let</span> <span class="ident">repr</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}.{}&quot;</span>, <span class="ident">cls</span>, <span class="ident">variant_name</span>);
             <span class="macro">quote!</span> { #<span class="ident">cls</span>::#<span class="ident">variant_name</span> =&gt; #<span class="ident">repr</span>, }
         });
-        <span class="macro">quote!</span> {
+        <span class="macro">syn::parse_quote!</span> {
             <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
             <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
             <span class="attribute">#[<span class="ident">pyo3</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__repr__&quot;</span>)]</span>
             <span class="kw">fn</span> <span class="ident">__pyo3__repr__</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
                 <span class="kw">match</span> <span class="self">self</span> {
                     #(#<span class="ident">variants_repr</span>)<span class="op">*</span>
-                    <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;Unsupported variant type.&quot;</span>),
                 }
             }
         }
     };
 
-    <span class="kw">let</span> <span class="ident">default_impls</span> <span class="op">=</span> <span class="ident">gen_default_slot_impls</span>(<span class="ident">cls</span>, <span class="macro">vec!</span>[<span class="ident">default_repr_impl</span>]);
-    <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> {
+    <span class="kw">let</span> <span class="ident">repr_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">enum_</span>.<span class="ident">repr_type</span>;
+
+    <span class="kw">let</span> <span class="ident">default_int</span> <span class="op">=</span> {
+        <span class="comment">// This implementation allows us to convert &amp;T to #repr_type without implementing `Copy`</span>
+        <span class="kw">let</span> <span class="ident">variants_to_int</span> <span class="op">=</span> <span class="ident">variants</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">variant</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">variant_name</span> <span class="op">=</span> <span class="ident">variant</span>.<span class="ident">ident</span>;
+            <span class="macro">quote!</span> { #<span class="ident">cls</span>::#<span class="ident">variant_name</span> =&gt; #<span class="ident">cls</span>::#<span class="ident">variant_name</span> <span class="kw">as</span> #<span class="ident">repr_type</span>, }
+        });
+        <span class="macro">syn::parse_quote!</span> {
+            <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+            <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+            <span class="attribute">#[<span class="ident">pyo3</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__int__&quot;</span>)]</span>
+            <span class="kw">fn</span> <span class="ident">__pyo3__int__</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #<span class="ident">repr_type</span> {
+                <span class="kw">match</span> <span class="self">self</span> {
+                    #(#<span class="ident">variants_to_int</span>)<span class="op">*</span>
+                }
+            }
+        }
+    };
+
+    <span class="kw">let</span> <span class="ident">default_richcmp</span> <span class="op">=</span> {
+        <span class="kw">let</span> <span class="ident">variants_eq</span> <span class="op">=</span> <span class="ident">variants</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">variant</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">variant_name</span> <span class="op">=</span> <span class="ident">variant</span>.<span class="ident">ident</span>;
+            <span class="macro">quote!</span> {
+                (#<span class="ident">cls</span>::#<span class="ident">variant_name</span>, #<span class="ident">cls</span>::#<span class="ident">variant_name</span>) =&gt;
+                    <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>.<span class="ident">to_object</span>(<span class="ident">py</span>)),
+            }
+        });
+        <span class="macro">syn::parse_quote!</span> {
+            <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+            <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+            <span class="attribute">#[<span class="ident">pyo3</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;__richcmp__&quot;</span>)]</span>
+            <span class="kw">fn</span> <span class="ident">__pyo3__richcmp__</span>(
+                <span class="kw-2">&amp;</span><span class="self">self</span>,
+                <span class="ident">py</span>: <span class="ident">_pyo3::Python</span>,
+                <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">_pyo3::PyAny</span>,
+                <span class="ident">op</span>: <span class="ident">_pyo3::basic::CompareOp</span>
+            ) -&gt; <span class="ident">_pyo3::PyResult</span><span class="op">&lt;</span><span class="ident">_pyo3::PyObject</span><span class="op">&gt;</span> {
+                <span class="kw">use</span> <span class="ident">_pyo3::conversion::ToPyObject</span>;
+                <span class="kw">use</span> <span class="ident">::core::result::Result</span>::<span class="kw-2">*</span>;
+                <span class="kw">match</span> <span class="ident">op</span> {
+                    <span class="ident">_pyo3::basic::CompareOp::Eq</span> =&gt; {
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">other</span>.<span class="ident">extract</span>::<span class="op">&lt;</span>#<span class="ident">repr_type</span><span class="op">&gt;</span>() {
+                            <span class="kw">let</span> <span class="ident">self_val</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">__pyo3__int__</span>();
+                            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">self_val</span> <span class="op">==</span> <span class="ident">i</span>).<span class="ident">to_object</span>(<span class="ident">py</span>));
+                        }
+                        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">extract</span>::<span class="op">&lt;</span><span class="ident">_pyo3::PyRef</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+                        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">other</span>;
+                        <span class="kw">match</span> (<span class="self">self</span>, <span class="ident">other</span>) {
+                            #(#<span class="ident">variants_eq</span>)<span class="op">*</span>
+                            <span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>.<span class="ident">to_object</span>(<span class="ident">py</span>)),
+                        }
+                    }
+                    <span class="kw">_</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">py</span>.<span class="ident">NotImplemented</span>()),
+                }
+            }
+        }
+    };
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">default_methods</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">default_repr_impl</span>, <span class="ident">default_richcmp</span>, <span class="ident">default_int</span>];
+
+    <span class="kw">let</span> <span class="ident">pyclass_impls</span> <span class="op">=</span> <span class="ident">PyClassImplsBuilder::new</span>(
+        <span class="ident">cls</span>,
+        <span class="ident">args</span>,
+        <span class="ident">methods_type</span>,
+        <span class="ident">enum_default_methods</span>(<span class="ident">cls</span>, <span class="ident">variants</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">ident</span>)),
+        <span class="ident">enum_default_slots</span>(<span class="ident">cls</span>, <span class="kw-2">&amp;mut</span> <span class="ident">default_methods</span>),
+    )
+    .<span class="ident">doc</span>(<span class="ident">doc</span>)
+    .<span class="ident">impl_all</span>();
+
+    <span class="macro">quote!</span> {
         <span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
             <span class="kw">use</span> #<span class="ident">krate</span> <span class="kw">as</span> <span class="ident">_pyo3</span>;
 
@@ -1439,65 +1442,62 @@
 
             #<span class="ident">pyclass_impls</span>
 
-            #<span class="ident">default_impls</span>
-
-            #<span class="ident">descriptors</span>
+            <span class="kw">impl</span> #<span class="ident">cls</span> {
+                #(#<span class="ident">default_methods</span>)<span class="op">*</span>
+            }
         };
-    })
+    }
 }
 
-<span class="kw">fn</span> <span class="ident">unit_variants_as_descriptors</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+<span class="kw">fn</span> <span class="ident">enum_default_methods</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
     <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>,
-    <span class="ident">variant_names</span>: <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span><span class="op">&gt;</span>,
-) -&gt; <span class="ident">TokenStream</span> {
+    <span class="ident">unit_variant_names</span>: <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span><span class="op">&gt;</span>,
+) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">cls_type</span> <span class="op">=</span> <span class="macro">syn::parse_quote!</span>(#<span class="ident">cls</span>);
     <span class="kw">let</span> <span class="ident">variant_to_attribute</span> <span class="op">=</span> <span class="op">|</span><span class="ident">ident</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span><span class="op">|</span> <span class="ident">ConstSpec</span> {
         <span class="ident">rust_ident</span>: <span class="ident">ident</span>.<span class="ident">clone</span>(),
         <span class="ident">attributes</span>: <span class="ident">ConstAttributes</span> {
             <span class="ident">is_class_attr</span>: <span class="bool-val">true</span>,
-            <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="ident">NameAttribute</span>(<span class="ident">ident</span>.<span class="ident">clone</span>())),
+            <span class="ident">name</span>: <span class="prelude-val">Some</span>(<span class="ident">NameAttribute</span> {
+                <span class="ident">kw</span>: <span class="macro">syn::parse_quote!</span> { <span class="ident">name</span> },
+                <span class="ident">value</span>: <span class="ident">NameLitStr</span>(<span class="ident">ident</span>.<span class="ident">clone</span>()),
+            }),
             <span class="ident">deprecations</span>: <span class="ident">Default::default</span>(),
         },
     };
-    <span class="kw">let</span> <span class="ident">py_methods</span> <span class="op">=</span> <span class="ident">variant_names</span>
+    <span class="ident">unit_variant_names</span>
         .<span class="ident">into_iter</span>()
-        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">var</span><span class="op">|</span> <span class="ident">gen_py_const</span>(<span class="kw-2">&amp;</span><span class="ident">cls_type</span>, <span class="kw-2">&amp;</span><span class="ident">variant_to_attribute</span>(<span class="ident">var</span>)));
-
-    <span class="macro">quote!</span> {
-        <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassDescriptors</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>
-            <span class="kw">for</span> <span class="ident">_pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>
-        {
-            <span class="kw">fn</span> <span class="ident">py_class_descriptors</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::class::methods::PyMethodDefType</span>] {
-                <span class="kw">static</span> <span class="ident">METHODS</span>: <span class="kw-2">&amp;</span>[<span class="ident">_pyo3::class::methods::PyMethodDefType</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[#(#<span class="ident">py_methods</span>),<span class="kw-2">*</span>];
-                <span class="ident">METHODS</span>
-            }
-        }
-    }
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">var</span><span class="op">|</span> <span class="ident">gen_py_const</span>(<span class="kw-2">&amp;</span><span class="ident">cls_type</span>, <span class="kw-2">&amp;</span><span class="ident">variant_to_attribute</span>(<span class="ident">var</span>)))
+        .<span class="ident">collect</span>()
 }
 
-<span class="kw">fn</span> <span class="ident">extract_variant_data</span>(<span class="ident">variant</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Variant</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">PyClassEnumVariant</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">enum_default_slots</span>(
+    <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>,
+    <span class="ident">default_items</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">syn::ImplItemMethod</span>],
+) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
+    <span class="ident">gen_default_items</span>(<span class="ident">cls</span>, <span class="ident">default_items</span>).<span class="ident">collect</span>()
+}
+
+<span class="kw">fn</span> <span class="ident">extract_variant_data</span>(<span class="ident">variant</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Variant</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">PyClassEnumVariant</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">syn::Fields</span>;
     <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">variant</span>.<span class="ident">fields</span> {
         <span class="ident">Fields::Unit</span> =&gt; <span class="kw-2">&amp;</span><span class="ident">variant</span>.<span class="ident">ident</span>,
         <span class="kw">_</span> =&gt; <span class="macro">bail_spanned!</span>(<span class="ident">variant</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;Currently only support unit variants.&quot;</span>),
     };
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">discriminant</span>) <span class="op">=</span> <span class="ident">variant</span>.<span class="ident">discriminant</span>.<span class="ident">as_ref</span>() {
-        <span class="macro">bail_spanned!</span>(<span class="ident">discriminant</span>.<span class="number">0</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;Currently does not support discriminats.&quot;</span>)
-    };
     <span class="prelude-val">Ok</span>(<span class="ident">PyClassEnumVariant</span> { <span class="ident">ident</span> })
 }
 
-<span class="kw">fn</span> <span class="ident">impl_descriptors</span>(
+<span class="kw">fn</span> <span class="ident">descriptors_to_items</span>(
     <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>,
     <span class="ident">field_options</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">syn::Field</span>, <span class="ident">FieldPyO3Options</span>)<span class="op">&gt;</span>,
-) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
+) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="macro">syn::parse_quote!</span>(#<span class="ident">cls</span>);
-    <span class="kw">let</span> <span class="ident">py_methods</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">field_options</span>
+    <span class="ident">field_options</span>
         .<span class="ident">into_iter</span>()
         .<span class="ident">enumerate</span>()
         .<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="ident">field_index</span>, (<span class="ident">field</span>, <span class="ident">options</span>))<span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">name_err</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">options</span>.<span class="ident">name</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">options</span>.<span class="ident">get</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">options</span>.<span class="ident">set</span> {
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">err_spanned!</span>(<span class="ident">options</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="number">0</span>.<span class="ident">span</span>() =&gt; <span class="string">&quot;`name` is useless without `get` or `set`&quot;</span>)))
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">err_spanned!</span>(<span class="ident">options</span>.<span class="ident">name</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">span</span>() =&gt; <span class="string">&quot;`name` is useless without `get` or `set`&quot;</span>)))
             } <span class="kw">else</span> {
                 <span class="prelude-val">None</span>
             };
@@ -1524,18 +1524,7 @@
 
             <span class="ident">name_err</span>.<span class="ident">into_iter</span>().<span class="ident">chain</span>(<span class="ident">getter</span>).<span class="ident">chain</span>(<span class="ident">setter</span>)
         })
-        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">syn::Result</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> {
-        <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassDescriptors</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>
-            <span class="kw">for</span> <span class="ident">_pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>
-        {
-            <span class="kw">fn</span> <span class="ident">py_class_descriptors</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::class::methods::PyMethodDefType</span>] {
-                <span class="kw">static</span> <span class="ident">METHODS</span>: <span class="kw-2">&amp;</span>[<span class="ident">_pyo3::class::methods::PyMethodDefType</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[#(#<span class="ident">py_methods</span>),<span class="kw-2">*</span>];
-                <span class="ident">METHODS</span>
-            }
-        }
-    })
+        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">syn::Result</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
 }
 
 <span class="kw">fn</span> <span class="ident">impl_pytypeinfo</span>(
@@ -1545,8 +1534,8 @@
 ) -&gt; <span class="ident">TokenStream</span> {
     <span class="kw">let</span> <span class="ident">cls_name</span> <span class="op">=</span> <span class="ident">get_class_python_name</span>(<span class="ident">cls</span>, <span class="ident">attr</span>).<span class="ident">to_string</span>();
 
-    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">m</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">attr</span>.<span class="ident">module</span> {
-        <span class="macro">quote!</span> { <span class="ident">::core::option::Option::Some</span>(#<span class="ident">m</span>) }
+    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ModuleAttribute</span> { <span class="ident">value</span>, .. }) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">module</span> {
+        <span class="macro">quote!</span> { <span class="ident">::core::option::Option::Some</span>(#<span class="ident">value</span>) }
     } <span class="kw">else</span> {
         <span class="macro">quote!</span> { <span class="ident">::core::option::Option::None</span> }
     };
@@ -1579,15 +1568,25 @@
     <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>,
     <span class="ident">attr</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyClassArgs</span>,
     <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>,
+    <span class="ident">default_methods</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+    <span class="ident">default_slots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
     <span class="ident">doc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PythonDoc</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PyClassImplsBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>, <span class="ident">attr</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyClassArgs</span>, <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(
+        <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">syn::Ident</span>,
+        <span class="ident">attr</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">PyClassArgs</span>,
+        <span class="ident">methods_type</span>: <span class="ident">PyClassMethodsType</span>,
+        <span class="ident">default_methods</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+        <span class="ident">default_slots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+    ) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">cls</span>,
             <span class="ident">attr</span>,
             <span class="ident">methods_type</span>,
+            <span class="ident">default_methods</span>,
+            <span class="ident">default_slots</span>,
             <span class="ident">doc</span>: <span class="prelude-val">None</span>,
         }
     }
@@ -1606,7 +1605,6 @@
             <span class="self">self</span>.<span class="ident">impl_into_py</span>(),
             <span class="self">self</span>.<span class="ident">impl_pyclassimpl</span>(),
             <span class="self">self</span>.<span class="ident">impl_freelist</span>(),
-            <span class="self">self</span>.<span class="ident">impl_gc</span>(),
         ]
         .<span class="ident">into_iter</span>()
         .<span class="ident">collect</span>()
@@ -1615,21 +1613,21 @@
     <span class="kw">fn</span> <span class="ident">impl_pyclass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TokenStream</span> {
         <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
         <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>;
-        <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">has_dict</span> {
+        <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">dict</span>.<span class="ident">is_some</span>() {
             <span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass::PyClassDictSlot</span> }
         } <span class="kw">else</span> {
             <span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass::PyClassDummySlot</span> }
         };
 
         <span class="comment">// insert space for weak ref</span>
-        <span class="kw">let</span> <span class="ident">weakref</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">has_weaklist</span> {
+        <span class="kw">let</span> <span class="ident">weakref</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">weakref</span>.<span class="ident">is_some</span>() {
             <span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass::PyClassWeakRefSlot</span> }
         } <span class="kw">else</span> {
             <span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass::PyClassDummySlot</span> }
         };
 
-        <span class="kw">let</span> <span class="ident">base_nativetype</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">has_extends</span> {
-            <span class="macro">quote!</span> { <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BaseType</span> <span class="kw">as</span> <span class="ident">_pyo3::class::impl_::PyClassBaseType</span><span class="op">&gt;</span><span class="ident">::BaseNativeType</span> }
+        <span class="kw">let</span> <span class="ident">base_nativetype</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">extends</span>.<span class="ident">is_some</span>() {
+            <span class="macro">quote!</span> { <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BaseType</span> <span class="kw">as</span> <span class="ident">_pyo3::impl_::pyclass::PyClassBaseType</span><span class="op">&gt;</span><span class="ident">::BaseNativeType</span> }
         } <span class="kw">else</span> {
             <span class="macro">quote!</span> { <span class="ident">_pyo3::PyAny</span> }
         };
@@ -1660,7 +1658,7 @@
         <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
         <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>;
         <span class="comment">// If #cls is not extended type, we allow Self-&gt;PyObject conversion</span>
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">attr</span>.<span class="ident">has_extends</span> {
+        <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">extends</span>.<span class="ident">is_none</span>() {
             <span class="macro">quote!</span> {
                 <span class="kw">impl</span> <span class="ident">_pyo3::IntoPy</span><span class="op">&lt;</span><span class="ident">_pyo3::PyObject</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">cls</span> {
                     <span class="kw">fn</span> <span class="ident">into_py</span>(<span class="self">self</span>, <span class="ident">py</span>: <span class="ident">_pyo3::Python</span>) -&gt; <span class="ident">_pyo3::PyObject</span> {
@@ -1675,12 +1673,17 @@
     <span class="kw">fn</span> <span class="ident">impl_pyclassimpl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TokenStream</span> {
         <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
         <span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">doc</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="macro">quote!</span> {<span class="string">&quot;\0&quot;</span>}, <span class="op">|</span><span class="ident">doc</span><span class="op">|</span> <span class="macro">quote!</span> {#<span class="ident">doc</span>});
-        <span class="kw">let</span> <span class="ident">is_gc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">is_gc</span>;
-        <span class="kw">let</span> <span class="ident">is_basetype</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">is_basetype</span>;
-        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">base</span>;
-        <span class="kw">let</span> <span class="ident">is_subclass</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">has_extends</span>;
+        <span class="kw">let</span> <span class="ident">is_basetype</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">subclass</span>.<span class="ident">is_some</span>();
+        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">attr</span>
+            .<span class="ident">options</span>
+            .<span class="ident">extends</span>
+            .<span class="ident">as_ref</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">extends_attr</span><span class="op">|</span> <span class="ident">extends_attr</span>.<span class="ident">value</span>.<span class="ident">clone</span>())
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">parse_quote!</span> { <span class="ident">_pyo3::PyAny</span> });
+        <span class="kw">let</span> <span class="ident">is_subclass</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">extends</span>.<span class="ident">is_some</span>();
 
-        <span class="kw">let</span> <span class="ident">dict_offset</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">has_dict</span> {
+        <span class="kw">let</span> <span class="ident">dict_offset</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">dict</span>.<span class="ident">is_some</span>() {
             <span class="macro">quote!</span> {
                 <span class="kw">fn</span> <span class="ident">dict_offset</span>() -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::Py_ssize_t</span><span class="op">&gt;</span> {
                     <span class="ident">::std::option::Option::Some</span>(<span class="ident">_pyo3::impl_::pyclass::dict_offset</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>())
@@ -1691,7 +1694,7 @@
         };
 
         <span class="comment">// insert space for weak ref</span>
-        <span class="kw">let</span> <span class="ident">weaklist_offset</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">has_weaklist</span> {
+        <span class="kw">let</span> <span class="ident">weaklist_offset</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">weakref</span>.<span class="ident">is_some</span>() {
             <span class="macro">quote!</span> {
                 <span class="kw">fn</span> <span class="ident">weaklist_offset</span>() -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::Py_ssize_t</span><span class="op">&gt;</span> {
                     <span class="ident">::std::option::Option::Some</span>(<span class="ident">_pyo3::impl_::pyclass::weaklist_offset</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>())
@@ -1701,25 +1704,20 @@
             <span class="ident">TokenStream::new</span>()
         };
 
-        <span class="kw">let</span> <span class="ident">thread_checker</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">has_unsendable</span> {
-            <span class="macro">quote!</span> { <span class="ident">_pyo3::class::impl_::ThreadCheckerImpl</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> }
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">has_extends</span> {
+        <span class="kw">let</span> <span class="ident">thread_checker</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">unsendable</span>.<span class="ident">is_some</span>() {
+            <span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass::ThreadCheckerImpl</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">extends</span>.<span class="ident">is_some</span>() {
             <span class="macro">quote!</span> {
-                <span class="ident">_pyo3::class::impl_::ThreadCheckerInherited</span><span class="op">&lt;</span>#<span class="ident">cls</span>, <span class="op">&lt;</span>#<span class="ident">cls</span> <span class="kw">as</span> <span class="ident">_pyo3::class::impl_::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::BaseType</span><span class="op">&gt;</span>
+                <span class="ident">_pyo3::impl_::pyclass::ThreadCheckerInherited</span><span class="op">&lt;</span>#<span class="ident">cls</span>, <span class="op">&lt;</span>#<span class="ident">cls</span> <span class="kw">as</span> <span class="ident">_pyo3::impl_::pyclass::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::BaseType</span><span class="op">&gt;</span>
             }
         } <span class="kw">else</span> {
-            <span class="macro">quote!</span> { <span class="ident">_pyo3::class::impl_::ThreadCheckerStub</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> }
+            <span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass::ThreadCheckerStub</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> }
         };
 
-        <span class="kw">let</span> (<span class="ident">for_each_py_method</span>, <span class="ident">methods_protos</span>, <span class="ident">inventory</span>, <span class="ident">inventory_class</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>
-            .<span class="ident">methods_type</span>
-        {
-            <span class="ident">PyClassMethodsType::Specialization</span> =&gt; (
-                <span class="macro">quote!</span> { <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">py_methods</span>()); },
-                <span class="macro">quote!</span> { <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">methods_protocol_slots</span>()); },
-                <span class="prelude-val">None</span>,
-                <span class="prelude-val">None</span>,
-            ),
+        <span class="kw">let</span> (<span class="ident">pymethods_items</span>, <span class="ident">inventory</span>, <span class="ident">inventory_class</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">methods_type</span> {
+            <span class="ident">PyClassMethodsType::Specialization</span> =&gt; {
+                (<span class="macro">quote!</span> { <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">py_methods</span>()); }, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+            }
             <span class="ident">PyClassMethodsType::Inventory</span> =&gt; {
                 <span class="comment">// To allow multiple #[pymethods] block, we define inventory types.</span>
                 <span class="kw">let</span> <span class="ident">inventory_class_name</span> <span class="op">=</span> <span class="ident">syn::Ident::new</span>(
@@ -1728,13 +1726,8 @@
                 );
                 (
                     <span class="macro">quote!</span> {
-                        <span class="kw">for</span> <span class="ident">inventory</span> <span class="kw">in</span> <span class="ident">_pyo3::inventory::iter</span>::<span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">_pyo3::class::impl_::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::Inventory</span><span class="op">&gt;</span>() {
-                            <span class="ident">visitor</span>(<span class="ident">_pyo3::class::impl_::PyClassInventory::methods</span>(<span class="ident">inventory</span>));
-                        }
-                    },
-                    <span class="macro">quote!</span> {
-                        <span class="kw">for</span> <span class="ident">inventory</span> <span class="kw">in</span> <span class="ident">_pyo3::inventory::iter</span>::<span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">_pyo3::class::impl_::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::Inventory</span><span class="op">&gt;</span>() {
-                            <span class="ident">visitor</span>(<span class="ident">_pyo3::class::impl_::PyClassInventory::slots</span>(<span class="ident">inventory</span>));
+                        <span class="kw">for</span> <span class="ident">inventory</span> <span class="kw">in</span> <span class="ident">_pyo3::inventory::iter</span>::<span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">_pyo3::impl_::pyclass::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::Inventory</span><span class="op">&gt;</span>() {
+                            <span class="ident">visitor</span>(<span class="ident">_pyo3::impl_::pyclass::PyClassInventory::items</span>(<span class="ident">inventory</span>));
                         }
                     },
                     <span class="prelude-val">Some</span>(<span class="macro">quote!</span> { <span class="kw">type</span> <span class="ident">Inventory</span> <span class="op">=</span> #<span class="ident">inventory_class_name</span>; }),
@@ -1742,10 +1735,32 @@
                 )
             }
         };
+
+        <span class="kw">let</span> <span class="ident">pyproto_items</span> <span class="op">=</span> <span class="kw">if</span> <span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;pyproto&quot;</span>) {
+            <span class="prelude-val">Some</span>(<span class="macro">quote!</span> {
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">object_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">number_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">iter_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">gc_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">descr_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">mapping_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">sequence_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">async_protocol_items</span>());
+                <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">buffer_protocol_items</span>());
+            })
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        };
+
+        <span class="kw">let</span> <span class="ident">default_methods</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">default_methods</span>;
+        <span class="kw">let</span> <span class="ident">default_slots</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">default_slots</span>;
+        <span class="kw">let</span> <span class="ident">freelist_slots</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">freelist_slots</span>();
+
+        <span class="kw">let</span> <span class="ident">deprecations</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">deprecations</span>;
+
         <span class="macro">quote!</span> {
-            <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassImpl</span> <span class="kw">for</span> #<span class="ident">cls</span> {
+            <span class="kw">impl</span> <span class="ident">_pyo3::impl_::pyclass::PyClassImpl</span> <span class="kw">for</span> #<span class="ident">cls</span> {
                 <span class="kw">const</span> <span class="ident">DOC</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> #<span class="ident">doc</span>;
-                <span class="kw">const</span> <span class="ident">IS_GC</span>: <span class="ident">bool</span> <span class="op">=</span> #<span class="ident">is_gc</span>;
                 <span class="kw">const</span> <span class="ident">IS_BASETYPE</span>: <span class="ident">bool</span> <span class="op">=</span> #<span class="ident">is_basetype</span>;
                 <span class="kw">const</span> <span class="ident">IS_SUBCLASS</span>: <span class="ident">bool</span> <span class="op">=</span> #<span class="ident">is_subclass</span>;
 
@@ -1754,50 +1769,17 @@
                 <span class="kw">type</span> <span class="ident">ThreadChecker</span> <span class="op">=</span> #<span class="ident">thread_checker</span>;
                 #<span class="ident">inventory</span>
 
-                <span class="kw">fn</span> <span class="ident">for_each_method_def</span>(<span class="ident">visitor</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">::std::ops::FnMut</span>(<span class="kw-2">&amp;</span>[<span class="ident">_pyo3::class::PyMethodDefType</span>])) {
-                    <span class="kw">use</span> <span class="ident">_pyo3::class::impl_</span>::<span class="kw-2">*</span>;
+                <span class="kw">fn</span> <span class="ident">for_all_items</span>(<span class="ident">visitor</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">::std::ops::FnMut</span>(<span class="op">&amp;</span> <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>)) {
+                    <span class="kw">use</span> <span class="ident">_pyo3::impl_::pyclass</span>::<span class="kw-2">*</span>;
                     <span class="kw">let</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">PyClassImplCollector</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="ident">::new</span>();
-                    #<span class="ident">for_each_py_method</span>;
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">py_class_descriptors</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">object_protocol_methods</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">async_protocol_methods</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">descr_protocol_methods</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">mapping_protocol_methods</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">number_protocol_methods</span>());
-                }
-                <span class="kw">fn</span> <span class="ident">get_new</span>() -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::newfunc</span><span class="op">&gt;</span> {
-                    <span class="kw">use</span> <span class="ident">_pyo3::class::impl_</span>::<span class="kw-2">*</span>;
-                    <span class="kw">let</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">PyClassImplCollector</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="ident">::new</span>();
-                    <span class="ident">collector</span>.<span class="ident">new_impl</span>()
-                }
-                <span class="kw">fn</span> <span class="ident">get_alloc</span>() -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::allocfunc</span><span class="op">&gt;</span> {
-                    <span class="kw">use</span> <span class="ident">_pyo3::class::impl_</span>::<span class="kw-2">*</span>;
-                    <span class="kw">let</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">PyClassImplCollector</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="ident">::new</span>();
-                    <span class="ident">collector</span>.<span class="ident">alloc_impl</span>()
-                }
-                <span class="kw">fn</span> <span class="ident">get_free</span>() -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::freefunc</span><span class="op">&gt;</span> {
-                    <span class="kw">use</span> <span class="ident">_pyo3::class::impl_</span>::<span class="kw-2">*</span>;
-                    <span class="kw">let</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">PyClassImplCollector</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="ident">::new</span>();
-                    <span class="ident">collector</span>.<span class="ident">free_impl</span>()
-                }
-
-                <span class="kw">fn</span> <span class="ident">for_each_proto_slot</span>(<span class="ident">visitor</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">::std::ops::FnMut</span>(<span class="kw-2">&amp;</span>[<span class="ident">_pyo3::ffi::PyType_Slot</span>])) {
-                    <span class="comment">// Implementation which uses dtolnay specialization to load all slots.</span>
-                    <span class="kw">use</span> <span class="ident">_pyo3::class::impl_</span>::<span class="kw-2">*</span>;
-                    <span class="kw">let</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">PyClassImplCollector</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="ident">::new</span>();
-                    <span class="comment">// This depends on Python implementation detail;</span>
-                    <span class="comment">// an old slot entry will be overriden by newer ones.</span>
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">py_class_default_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">object_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">number_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">iter_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">gc_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">descr_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">mapping_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">sequence_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">async_protocol_slots</span>());
-                    <span class="ident">visitor</span>(<span class="ident">collector</span>.<span class="ident">buffer_protocol_slots</span>());
-                    #<span class="ident">methods_protos</span>
+                    #<span class="ident">deprecations</span>;
+                    <span class="kw">static</span> <span class="ident">INTRINSIC_ITEMS</span>: <span class="ident">PyClassItems</span> <span class="op">=</span> <span class="ident">PyClassItems</span> {
+                        <span class="ident">methods</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">default_methods</span>),<span class="kw-2">*</span>],
+                        <span class="ident">slots</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">default_slots</span>),<span class="op">*</span> #(#<span class="ident">freelist_slots</span>),<span class="kw-2">*</span>],
+                    };
+                    <span class="ident">visitor</span>(<span class="kw-2">&amp;</span><span class="ident">INTRINSIC_ITEMS</span>);
+                    #<span class="ident">pymethods_items</span>
+                    #<span class="ident">pyproto_items</span>
                 }
 
                 #<span class="ident">dict_offset</span>
@@ -1812,9 +1794,10 @@
     <span class="kw">fn</span> <span class="ident">impl_freelist</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TokenStream</span> {
         <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
 
-        <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">freelist</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="macro">quote!</span>{}, <span class="op">|</span><span class="ident">freelist</span><span class="op">|</span> {
+        <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">freelist</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="macro">quote!</span>{}, <span class="op">|</span><span class="ident">freelist</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">freelist</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">freelist</span>.<span class="ident">value</span>;
             <span class="macro">quote!</span> {
-                <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassWithFreeList</span> <span class="kw">for</span> #<span class="ident">cls</span> {
+                <span class="kw">impl</span> <span class="ident">_pyo3::impl_::pyclass::PyClassWithFreeList</span> <span class="kw">for</span> #<span class="ident">cls</span> {
                     <span class="attribute">#[<span class="ident">inline</span>]</span>
                     <span class="kw">fn</span> <span class="ident">get_free_list</span>(<span class="ident">_py</span>: <span class="ident">_pyo3::Python</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">_pyo3::impl_::freelist::FreeList</span><span class="op">&lt;</span><span class="kw-2">*mut</span> <span class="ident">_pyo3::ffi::PyObject</span><span class="op">&gt;</span> {
                         <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">FREELIST</span>: <span class="kw-2">*mut</span> <span class="ident">_pyo3::impl_::freelist::FreeList</span><span class="op">&lt;</span><span class="kw-2">*mut</span> <span class="ident">_pyo3::ffi::PyObject</span><span class="op">&gt;</span> <span class="op">=</span> <span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>;
@@ -1827,40 +1810,30 @@
                         }
                     }
                 }
-
-                <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassAllocImpl</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">_pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> {
-                    <span class="attribute">#[<span class="ident">inline</span>]</span>
-                    <span class="kw">fn</span> <span class="ident">alloc_impl</span>(<span class="self">self</span>) -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::allocfunc</span><span class="op">&gt;</span> {
-                        <span class="ident">::std::option::Option::Some</span>(<span class="ident">_pyo3::class::impl_::alloc_with_freelist</span>::<span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>)
-                    }
-                }
-
-                <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassFreeImpl</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">_pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> {
-                    <span class="attribute">#[<span class="ident">inline</span>]</span>
-                    <span class="kw">fn</span> <span class="ident">free_impl</span>(<span class="self">self</span>) -&gt; <span class="ident">::std::option::Option</span><span class="op">&lt;</span><span class="ident">_pyo3::ffi::freefunc</span><span class="op">&gt;</span> {
-                        <span class="ident">::std::option::Option::Some</span>(<span class="ident">_pyo3::class::impl_::free_with_freelist</span>::<span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>)
-                    }
-                }
             }
         })
     }
-    <span class="doccomment">/// Enforce at compile time that PyGCProtocol is implemented</span>
-    <span class="kw">fn</span> <span class="ident">impl_gc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TokenStream</span> {
-        <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>;
-        <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">is_gc</span> {
-            <span class="kw">let</span> <span class="ident">closure_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;__assertion_closure_{}&quot;</span>, <span class="ident">cls</span>);
-            <span class="kw">let</span> <span class="ident">closure_token</span> <span class="op">=</span> <span class="ident">syn::Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">closure_name</span>, <span class="ident">Span::call_site</span>());
-            <span class="macro">quote!</span> {
-                <span class="kw">fn</span> #<span class="ident">closure_token</span>() {
-                    <span class="kw">use</span> <span class="ident">_pyo3::class</span>;
 
-                    <span class="kw">fn</span> <span class="ident">_assert_implements_protocol</span><span class="op">&lt;</span><span class="lifetime">&#39;p</span>, <span class="ident">T</span>: <span class="ident">_pyo3::class::PyGCProtocol</span><span class="op">&lt;</span><span class="lifetime">&#39;p</span><span class="op">&gt;</span><span class="op">&gt;</span>() {}
-                    <span class="ident">_assert_implements_protocol</span>::<span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>();
-                }
-            }
+    <span class="kw">fn</span> <span class="ident">freelist_slots</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
+
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">options</span>.<span class="ident">freelist</span>.<span class="ident">is_some</span>() {
+            <span class="macro">vec!</span>[
+                <span class="macro">quote!</span> {
+                    <span class="ident">_pyo3::ffi::PyType_Slot</span> {
+                        <span class="ident">slot</span>: <span class="ident">_pyo3::ffi::Py_tp_alloc</span>,
+                        <span class="ident">pfunc</span>: <span class="ident">_pyo3::impl_::pyclass::alloc_with_freelist</span>::<span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>,
+                    }
+                },
+                <span class="macro">quote!</span> {
+                    <span class="ident">_pyo3::ffi::PyType_Slot</span> {
+                        <span class="ident">slot</span>: <span class="ident">_pyo3::ffi::Py_tp_free</span>,
+                        <span class="ident">pfunc</span>: <span class="ident">_pyo3::impl_::pyclass::free_with_freelist</span>::<span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>,
+                    }
+                },
+            ]
         } <span class="kw">else</span> {
-            <span class="macro">quote!</span> {}
+            <span class="ident">Vec::new</span>()
         }
     }
 }
@@ -1869,34 +1842,23 @@
     <span class="macro">quote!</span> {
         <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
         <span class="kw">pub</span> <span class="kw">struct</span> #<span class="ident">inventory_class_name</span> {
-            <span class="ident">methods</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::class::PyMethodDefType</span>],
-            <span class="ident">slots</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::ffi::PyType_Slot</span>],
+            <span class="ident">items</span>: <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>,
         }
         <span class="kw">impl</span> #<span class="ident">inventory_class_name</span> {
-            <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(
-                <span class="ident">methods</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::class::PyMethodDefType</span>],
-                <span class="ident">slots</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::ffi::PyType_Slot</span>],
-            ) -&gt; <span class="self">Self</span> {
-                <span class="self">Self</span> { <span class="ident">methods</span>, <span class="ident">slots</span> }
+            <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">items</span>: <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>) -&gt; <span class="self">Self</span> {
+                <span class="self">Self</span> { <span class="ident">items</span> }
             }
         }
 
-        <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyClassInventory</span> <span class="kw">for</span> #<span class="ident">inventory_class_name</span> {
-            <span class="kw">fn</span> <span class="ident">methods</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::class::PyMethodDefType</span>] {
-                <span class="self">self</span>.<span class="ident">methods</span>
-            }
-            <span class="kw">fn</span> <span class="ident">slots</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::ffi::PyType_Slot</span>] {
-                <span class="self">self</span>.<span class="ident">slots</span>
+        <span class="kw">impl</span> <span class="ident">_pyo3::impl_::pyclass::PyClassInventory</span> <span class="kw">for</span> #<span class="ident">inventory_class_name</span> {
+            <span class="kw">fn</span> <span class="ident">items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">_pyo3::impl_::pyclass::PyClassItems</span> {
+                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">items</span>
             }
         }
-
-        <span class="comment">// inventory requires these bounds</span>
-        <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">::std::marker::Send</span> <span class="kw">for</span> #<span class="ident">inventory_class_name</span> {}
-        <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">::std::marker::Sync</span> <span class="kw">for</span> #<span class="ident">inventory_class_name</span> {}
 
         <span class="macro">_pyo3::inventory::collect!</span>(#<span class="ident">inventory_class_name</span>);
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (6abb6385b 2022-01-26)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (63b8f01bb 2022-03-24)" ></div>
 </body></html>
