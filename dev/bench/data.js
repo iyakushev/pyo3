@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1648221335014,
+  "lastUpdate": 1670926178117,
   "repoUrl": "https://github.com/iyakushev/pyo3",
   "entries": {
     "pyo3-bench": [
@@ -49511,6 +49511,186 @@ window.BENCHMARK_DATA = {
             "name": "tuple_get_item_unchecked",
             "value": 710665,
             "range": "± 564",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "26634292+bors[bot]@users.noreply.github.com",
+            "name": "bors[bot]",
+            "username": "bors[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "389a6625066f35738598e6a4a94a4086269eacdc",
+          "message": "Merge #2795\n\n2795: accept any iterator for `PySet::new` and `PyFrozenSet::new` r=birkenfeld a=davidhewitt\n\nCloses #2789 \r\n\r\nLooks like it's about 20% faster in the case I benchmarked to use `PySet_Add` directly without the intermediate list.\n\nCo-authored-by: David Hewitt <1939362+davidhewitt@users.noreply.github.com>",
+          "timestamp": "2022-12-09T14:54:51Z",
+          "tree_id": "73a5c97df64a82df1ee7c57262836bd0b2fecb44",
+          "url": "https://github.com/iyakushev/pyo3/commit/389a6625066f35738598e6a4a94a4086269eacdc"
+        },
+        "date": 1670926141496,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "call_0",
+            "value": 59270,
+            "range": "± 1601",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "call_method_0",
+            "value": 154401,
+            "range": "± 5103",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter_dict",
+            "value": 3330082,
+            "range": "± 48054",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dict_new",
+            "value": 5074923,
+            "range": "± 122040",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dict_get_item",
+            "value": 3332102,
+            "range": "± 31004",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "extract_hashmap",
+            "value": 8807349,
+            "range": "± 783948",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "extract_btreemap",
+            "value": 13501588,
+            "range": "± 164288",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "extract_hashbrown_map",
+            "value": 7540708,
+            "range": "± 387995",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "clean_gilpool_new",
+            "value": 15,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "clean_acquire_gil",
+            "value": 108,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dirty_acquire_gil",
+            "value": 114,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter_list",
+            "value": 2038824,
+            "range": "± 15649",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "list_new",
+            "value": 1437667,
+            "range": "± 159770",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "list_get_item",
+            "value": 1193038,
+            "range": "± 40845",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "list_get_item_unchecked",
+            "value": 1066254,
+            "range": "± 41113",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "first_time_init",
+            "value": 4789,
+            "range": "± 25686",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "drop_many_objects",
+            "value": 3428,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "set_new",
+            "value": 2067193,
+            "range": "± 17084",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter_set",
+            "value": 2669476,
+            "range": "± 17374",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "extract_hashset",
+            "value": 9486167,
+            "range": "± 122917",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "extract_btreeset",
+            "value": 4685933,
+            "range": "± 30546",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "extract_hashbrown_set",
+            "value": 6770539,
+            "range": "± 104051",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "iter_tuple",
+            "value": 1377287,
+            "range": "± 1295",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "tuple_new",
+            "value": 1449888,
+            "range": "± 126076",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "tuple_get_item",
+            "value": 904690,
+            "range": "± 982",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "tuple_get_item_unchecked",
+            "value": 775918,
+            "range": "± 777",
             "unit": "ns/iter"
           }
         ]
